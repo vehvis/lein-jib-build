@@ -1,21 +1,14 @@
 # lein-jibcore
 
-A Leiningen plugin to do many wonderful things.
+Build docker containers with Leiningen, no docker installation needed. Uses Google's Jib toolkit.
 
 ## Usage
 
-FIXME: Use this for user-level plugins:
-
-Put `[lein-jibcore "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your `:user`
+Put `[vaik.io/lein-jib.build "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your `:user`
 profile.
 
-FIXME: Use this for project-level plugins:
 
-Put `[lein-jibcore "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your project.clj.
-
-FIXME: and add an example usage that actually makes sense:
-
-    $ lein jibcore
+    $ lein do uberjar, jib-core
 
 ## License
 
