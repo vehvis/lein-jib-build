@@ -1,14 +1,13 @@
-# lein-jibcore
+# lein-jib-build
 
 Build docker containers with Leiningen, no docker installation needed. Uses Google's Jib toolkit.
 
 ## Usage
 
-Put `[vaik.io/lein-jib.build "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your `:user`
-profile.
+Put `[vaik.io/lein-jib.build "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your project.
 
 
-    $ lein do uberjar, jib-core
+    $ lein do uberjar, jib-build
 
 ## License
 

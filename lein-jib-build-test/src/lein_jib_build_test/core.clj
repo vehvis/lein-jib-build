@@ -1,4 +1,4 @@
-(ns lein-jibcore-test.core
+(ns lein-jib-build-test.core
   (:gen-class))
 
 (defn -main
