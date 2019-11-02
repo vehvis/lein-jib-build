@@ -38,10 +38,6 @@
         standalone-jar (jar/get-jar-filename project :standalone)
         base-image (get config :base-image "gcr.io/distroless/java")]
     (lein/info "Constructing container upon" base-image "with" standalone-jar)
-    ;(println "1" (.getProtectionDomain ImmutableList))
-    ;(println "2" (.getCodeSource (.getProtectionDomain ImmutableList)))
-    ;(println "3" (.getLocation (.getCodeSource (.getProtectionDomain ImmutableList))))
-    ;(println "4" (.toExternalForm (.getLocation (.getCodeSource (.getProtectionDomain ImmutableList)))))
     (-> (Jib/from base-image)
         (.addLayer (into-list (get-path standalone-jar)) (AbsoluteUnixPath/get "/"))
         (.setEntrypoint (into-list "java" "-jar"))
