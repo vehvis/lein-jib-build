@@ -9,6 +9,7 @@ pom.xml.asc
 .lein-*
 .nrepl-port
 .cpcache/
+.gradle/
 .idea/
 *.iml
 *.iws
