@@ -13,6 +13,8 @@ I've only tested with Java 11.
 
 ## Usage
 
+The plugin is available on clojars: https://clojars.org/vaik.io/lein-jib-build
+
 Configure your project.clj as follows:
 
 ```clojure
@@ -61,7 +63,8 @@ These options are usable with both `base-image` and `target-image`.
                :image-name "target/helloworld.tar"}
 ```
 ```clojure
-;; Deploy to a Docker registry with optional username/password authentication (please mind your security).
+;; Deploy to a Docker registry with optional username/password authentication 
+;; Please mind your security!
 :target-image {:type registry
                :image-name "docker.io/foobar/helloworld"
                :username "username"   ;; optional

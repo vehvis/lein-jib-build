@@ -1,5 +1,6 @@
 (defproject vaik.io/lein-jib-build "0.2.0"
-  :description "FIXME: write description"
+  :description "Creates a docker container out of your uberjar without needing Docker."
+  :url "https://github.com/vehvis/lein-jib-build"
   :license {:name "Apache 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0"}
 
