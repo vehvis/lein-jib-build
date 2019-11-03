@@ -7,7 +7,7 @@
   :main  lein-jib-build-test.core
 
 
-  :plugins [[vaik.io/lein-jib-build "0.2.0"]]
+  :plugins [[vaik.io/lein-jib-build "0.2.1"]]
   :jib-build/build-config {:base-image {:type :registry
                                         :image-name "gcr.io/distroless/java"}
                            :target-image {:type :docker

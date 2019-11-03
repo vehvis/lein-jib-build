@@ -26,11 +26,11 @@ Configure your project.clj as follows:
 
 ```
 
-Build the image and deploy it to the specified registry:
+Build the image and deploy it to the local docker repo:
 
     $ lein do uberjar, jib-build
 
-Build the image and deploy it to the specified registry:
+Now you can run it:
 
     $ docker run helloworld
     Hello, world!
