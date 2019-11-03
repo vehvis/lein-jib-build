@@ -1,46 +1,96 @@
 (ns leiningen.jib-build
-  (:import [com.google.cloud.tools.jib.api Jib DockerDaemonImage Containerizer TarImage RegistryImage]
-           [com.google.cloud.tools.jib.api AbsoluteUnixPath]
-           [com.google.common.collect ImmutableList]
+  (:import [com.google.cloud.tools.jib.api Jib
+                                           DockerDaemonImage
+                                           Containerizer
+                                           TarImage
+                                           RegistryImage
+                                           AbsoluteUnixPath
+                                           ImageReference CredentialRetriever Credential]
            [java.io File]
-           [java.util List ArrayList]
-           [java.nio.file Paths]
-           [com.google.cloud.tools.jib.builder ProgressEventDispatcher])
+           [java.util List ArrayList Optional]
+           [java.nio.file Paths])
   (:require [leiningen.core.main :as lein]
-            [leiningen.jar :as jar]))
+            [leiningen.core.classpath :as lein-cp]
+            [leiningen.uberjar :as uberjar]
+            [leiningen.jar :as jar]
+            [clojure.pprint :as pprint]
+            [leiningen.core.project :as project]))
 
+(def default-base-image {:type registry
+                         :image-name "gcr.io/distroless/java"})
+(def default-entrypoint ["java" "-jar"])
+
+
+(defn- into-list
+  [& args]
+  (ArrayList. ^List args))
 
 (defn- get-path [filename]
   (Paths/get (.toURI (File. ^String filename))))
 
-(defn- containerizer [project {image-config :target-image}]
-  (let [image-name (:name project)]
-    (case (get image-config :target-type :docker)
-      #_:tar #_(do
-                 (lein/info "Building tar image:" image-name)
-                 (Containerizer/to (-> (TarImage/named image-name)
-                                       (.saveTo (Paths/get (.toURI (File. ^String image-name)))))))
-      :registry (do
-                  (lein/info "Deploying into registry:" image-name)
-                  (Containerizer/to (RegistryImage/named ^String image-name)))
-      :docker (do
-                (lein/info "Deploying to local docker:" image-name)
-                (Containerizer/to (DockerDaemonImage/named ^String image-name))))))
+(defn- to-imgref [image-config]
+  (ImageReference/parse (:image-name image-config)))
 
-(defn- into-list [& args]
-  (ArrayList. ^List args))
+(defn add-registry-credentials [rimg registry-config]
+  (cond
+    (:username registry-config)
+    (do (lein/debug "Using username/password authentication, user:" (:username registry-config))
+        (.addCredential rimg (:username registry-config) (:password registry-config)))
 
+    (:authorizer registry-config)
+    (let [auth (:authorizer registry-config)]
+      (lein/debug "Using custom registry authentication:" (:authorizer registry-config))
+      (.addCredentialRetriever rimg (reify CredentialRetriever
+                                      (retrieve [_]
+                                        (require [(symbol (namespace (:fn auth)))])
+                                        (let [creds (eval `(~(:fn auth) ~(:args auth)))]
+                                          (Optional/of (Credential/from (:username creds) (:password creds))))))))
+
+    :default rimg))
+
+
+
+(defmulti configure-image (fn [image-config project] (:type image-config)))
+
+(defmethod configure-image :tar [{:keys [image-name]} project]
+  (let [image-name (or image-name (str "target/" (:name project) ".tar"))]
+    (lein/debug "Tar image:" image-name)
+    (.named (TarImage/at (-> (File. ^String image-name)
+                             .toURI
+                             Paths/get))
+            ^String image-name)))
+
+(defmethod configure-image :registry [{:keys [image-name] :as image-config} project]
+  (let [image-name (or image-name (:name project))]
+    (lein/debug "Registry image:" image-name)
+    (-> (RegistryImage/named ^ImageReference (to-imgref image-config))
+        (add-registry-credentials image-config))))
+
+(defmethod configure-image :docker [{:keys [image-name] :as image-config} project]
+  (let [image-name (or image-name (:name project))]
+    (lein/debug "Local docker:" image-name)
+    (DockerDaemonImage/named ^ImageReference (to-imgref image-config))))
+
+(defmethod configure-image :default [image-config _]
+  (throw (Exception. ^String (str "Unknown image type: " (:image-name image-config)))))
 
 (defn jib-build
-  "I don't do a lot."
+  "It places the jar in the container (or else it gets the hose again)."
   [project & args]
-  (let [config (:jib-build/build-config project)
+  #_(pprint/pprint (lein-cp/ext-classpath project))
+  #_(pprint/pprint args)
+  (let [project (project/merge-profiles project [:uberjar])
+        config (:jib-build/build-config project)
         standalone-jar (jar/get-jar-filename project :standalone)
-        base-image (get config :base-image "gcr.io/distroless/java")]
-    (lein/info "Constructing container upon" base-image "with" standalone-jar)
-    (-> (Jib/from base-image)
-        (.addLayer (into-list (get-path standalone-jar)) (AbsoluteUnixPath/get "/"))
-        (.setEntrypoint (into-list "java" "-jar"))
-        (.setProgramArguments (into-list (.toString (.getFileName (get-path standalone-jar)))))
-        (.containerize (containerizer project config)))))
+        base-image (get config :base-image default-base-image)
+        entrypoint (get config :entrypoint default-entrypoint)
+        arguments (get config :arguments (.toString (.getFileName (get-path standalone-jar))))
+        app-layer [(into-list (get-path standalone-jar))
+                   (AbsoluteUnixPath/get "/")]]
+    (lein/info "Building container upon" (:image-name base-image) "with" standalone-jar)
+    (-> (Jib/from (configure-image base-image project))
+        (.addLayer (first app-layer) (second app-layer))
+        (.setEntrypoint (apply into-list entrypoint))
+        (.setProgramArguments (into-list arguments))
+        (.containerize (Containerizer/to (configure-image (:target-image config) project))))))
 
