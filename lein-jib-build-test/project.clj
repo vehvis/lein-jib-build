@@ -10,13 +10,8 @@
   :plugins [[vaik.io/lein-jib-build "0.2.0"]]
   :jib-build/build-config {:base-image {:type :registry
                                         :image-name "gcr.io/distroless/java"}
-                           :target-image {:type :registry
-                                          :image-name "566325148757.dkr.ecr.eu-central-1.amazonaws.com/helloworld"
-                                          :authorizer {:fn leiningen.aws-ecr-auth/ecr-auth
-                                                       :args {:type :assume-role
-                                                              :role-arn "arn:aws:iam::566325148757:role/developer"}}}}
+                           :target-image {:type :docker
+                                          :image-name "helloworld"}})
 
-  :profiles {:uberjar {:aot :all
-                       :uberjar-name "foo.jar"}})
 
 
