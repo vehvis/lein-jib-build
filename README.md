@@ -9,6 +9,9 @@ Build docker containers with Leiningen, no docker installation needed. Uses Goog
 Clojure 1.10.0 or later is needed. Leiningen 2.9.0 or later is needed. This will probably work with Java 8 but
 I've only tested with Java 11.
 
+Docker is required only if you want to use images from or deploy images to your local docker repository. Remote registries
+and tarfiles work without Docker.
+
 **Your project must emit an uberjar** or something closely like it for this plugin to be useful in its current state.
 
 ## Usage
