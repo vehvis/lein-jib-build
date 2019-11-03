@@ -5,6 +5,7 @@ pom.xml.asc
 /lib/
 /classes/
 /target/
+/**/target/**
 /checkouts/
 .lein-*
 .nrepl-port
