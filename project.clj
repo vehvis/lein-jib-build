@@ -1,4 +1,4 @@
-(defproject vaik.io/lein-jib-build "0.2.0"
+(defproject vaik.io/lein-jib-build "0.2.1-SNAPSHOT"
   :description "Creates a docker container out of your uberjar without needing Docker."
   :url "https://github.com/vehvis/lein-jib-build"
   :license {:name "Apache 2.0"

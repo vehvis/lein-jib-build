@@ -43,30 +43,30 @@ There's also an [example project](https://github.com/vehvis/lein-jib-build/tree/
 
 ## Configuration options
 
-The `:jib-build/build-config` map supports the following required options:
-* `:base-image {...}` - base Docker image to build upon, see below for details
+The `:jib-build/build-config` map has the following required options:
 * `:target-image {...}` - what to do with the built image, also see below
 
 The following are optional:
+* `:base-image {...}` - base Docker image to build upon, see below for details. Defaults to `gcr.io/distroless/java`.
 * `:entrypoint [...]` - a vector of strings to use as the container's ENTRYPOINT value, defaults to `["java" "-jar"]`
-* `:arguments "..."` - a string to give to the entrypoint as arguments, defaults to the name of the project's uberjar
+* `:arguments "..."` - a string to give to the entrypoint as arguments, defaults to the name of the project's uberjar.
 
 #### Referring to images
 
 These options are usable with both `base-image` and `target-image`.
 
 ```clojure
-;; Deploy to your local docker daemon (requires dockerd to be running)
+;; Deploy to (or build upon an image from) your local docker daemon (requires dockerd to be running)
 :target-image {:type docker
                :image-name "helloworld"}
 ```
 ```clojure
-;; Deploy as a tar archive
+;; Deploy as (or build upon) a tar archive
 :target-image {:type tar
                :image-name "target/helloworld.tar"}
 ```
 ```clojure
-;; Deploy to a Docker registry with optional username/password authentication 
+;; Deploy to (or build upon an image from) a Docker registry with optional username/password authentication 
 ;; Please mind your security!
 :target-image {:type registry
                :image-name "repository.mordor.me/sauron/helloworld"
@@ -79,7 +79,7 @@ These options are usable with both `base-image` and `target-image`.
 
 If you're using AWS ECR there's direct support for more sophisticated authentication.
 
-Deploy to ECR with assume-role (this is the recommended option):
+Deploy to ECR with assume-role (uses the standard AWS credential chain):
 
 ```clojure
 :target-image {:type registry
@@ -89,7 +89,7 @@ Deploy to ECR with assume-role (this is the recommended option):
                                    :role-arn "arn:aws:iam::123456789:role/nazgul"}}}
 ```
 
-Deploy to ECR using a profile:
+Deploy to ECR using a specific profile:
 
 ```clojure
 :target-image {:type registry
@@ -133,7 +133,9 @@ With JVM system properties:
 
 #### Using a custom registry authorizer
 
-Create a function in a namespace accessible to leiningen with a single argument:
+Nothing prevents you from making a custom authorizer just like the ECR thing above.
+Create a function in a namespace accessible to leiningen with a single argument, and 
+have it return a username/password map:
 
 ```clojure
 (defn custom-authorizer [config] 
@@ -141,7 +143,7 @@ Create a function in a namespace accessible to leiningen with a single argument:
     :password (apply str (reverse (:encrypted-password config))})
 ```
 
-The function gets passed the `args` map:
+The function gets passed the `args` map from your `project.clj`:
 
 ```clojure
 :target-image {:type registry
