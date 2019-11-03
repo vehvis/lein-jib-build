@@ -38,7 +38,7 @@ Now you can run it:
     $ docker run helloworld
     Hello, world!
 
-There's also an [example project](https://github.com/vehvis/lein-jib-build/tree/master/lein-jib-build-test) 
+There's also an [example project](https://github.com/vehvis/lein-jib-build/tree/master/lein-jib-build-test) you can take a look at.
 
 
 ## Configuration options
