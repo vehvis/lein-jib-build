@@ -43,7 +43,7 @@ There's also an [example project](https://github.com/vehvis/lein-jib-build/tree/
 
 ## Configuration options
 
-The `jib-build/build-config` map supports the following required options:
+The `:jib-build/build-config` map supports the following required options:
 * `:base-image {...}` - base Docker image to build upon, see below for details
 * `:target-image {...}` - what to do with the built image, also see below
 
@@ -69,9 +69,9 @@ These options are usable with both `base-image` and `target-image`.
 ;; Deploy to a Docker registry with optional username/password authentication 
 ;; Please mind your security!
 :target-image {:type registry
-               :image-name "docker.io/foobar/helloworld"
-               :username "username"   ;; optional
-               :password "password"   ;; optional
+               :image-name "repository.mordor.me/sauron/helloworld"
+               :username "sauron"   ;; optional
+               :password "VERYSECRET"   ;; optional
                }
 ```
 
