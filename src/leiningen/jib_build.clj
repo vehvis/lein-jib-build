@@ -16,7 +16,7 @@
             [clojure.pprint :as pprint]
             [leiningen.core.project :as project]))
 
-(def default-base-image {:type registry
+(def default-base-image {:type :registry
                          :image-name "gcr.io/distroless/java"})
 (def default-entrypoint ["java" "-jar"])
 
