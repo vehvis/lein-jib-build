@@ -57,20 +57,20 @@ These options are usable with both `base-image` and `target-image`.
 
 ```clojure
 ;; Deploy to (or build upon an image from) your local docker daemon (requires dockerd to be running)
-:target-image {:type docker
+:target-image {:type :docker
                :image-name "helloworld"}
 ```
 ```clojure
 ;; Deploy as (or build upon) a tar archive
-:target-image {:type tar
+:target-image {:type :tar
                :image-name "target/helloworld.tar"}
 ```
 ```clojure
 ;; Deploy to (or build upon an image from) a Docker registry with optional username/password authentication 
 ;; Please mind your security!
-:target-image {:type registry
+:target-image {:type :registry
                :image-name "repository.mordor.me/sauron/helloworld"
-               :username "sauron"   ;; optional
+               :username "sauron"       ;; optional
                :password "VERYSECRET"   ;; optional
                }
 ```
@@ -82,7 +82,7 @@ If you're using AWS ECR there's direct support for more sophisticated authentica
 Deploy to ECR with assume-role (uses the standard AWS credential chain):
 
 ```clojure
-:target-image {:type registry
+:target-image {:type :registry
                :image-name "123456789.dkr.ecr.mordor-east-1.amazonaws.com/helloworld"
                :authorizer {:fn leiningen.aws-ecr-auth/ecr-auth
                             :args {:type :assume-role
@@ -92,7 +92,7 @@ Deploy to ECR with assume-role (uses the standard AWS credential chain):
 Deploy to ECR using a specific profile:
 
 ```clojure
-:target-image {:type registry
+:target-image {:type :registry
                :image-name "123456789.dkr.ecr.mordor-east-1.amazonaws.com/helloworld"
                :authorizer {:fn leiningen.aws-ecr-auth/ecr-auth
                             :args {:type :profile
@@ -104,7 +104,7 @@ Using environment variables:
 * `AWS_SECRET_ACCESS_KEY`  (required)
 * `AWS_SESSION_TOKEN`      (optional)
 ```clojure
-:target-image {:type registry
+:target-image {:type :registry
                :image-name "123456789.dkr.ecr.mordor-east-1.amazonaws.com/helloworld"
                :authorizer {:fn leiningen.aws-ecr-auth/ecr-auth
                             :args {:type :environment}}}
@@ -112,7 +112,7 @@ Using environment variables:
 
 With an access key:
 ```clojure
-:target-image {:type registry
+:target-image {:type :registry
                :image-name "123456789.dkr.ecr.mordor-east-1.amazonaws.com/helloworld"
                :authorizer {:fn leiningen.aws-ecr-auth/ecr-auth
                             :args {:type :access-key
@@ -146,7 +146,7 @@ have it return a username/password map:
 The function gets passed the `args` map from your `project.clj`:
 
 ```clojure
-:target-image {:type registry
+:target-image {:type :registry
                :image-name "123456789.dkr.ecr.mordor-east-1.amazonaws.com/helloworld"
                :authorizer {:fn my-namespace/my-custom-authorizer
                             :args {:username "Sauron" :encrypted-password "TERCESYREV"}}}
